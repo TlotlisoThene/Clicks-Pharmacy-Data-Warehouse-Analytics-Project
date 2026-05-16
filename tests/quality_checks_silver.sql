@@ -1,165 +1,256 @@
 /*
-=================================================================================
-Quality Checks
-==================================================================================
+===============================================================================
+Quality Checks - Silver Layer
+===============================================================================
 Script Purpose:
-     This script perfomrs various qulaity checks fro data consistency, accuracy,
-      and standardization across the 'silver' schemas. It includes checks for:
-        - Null or duplicate primary keys.
-        - Unwanted spaces in string fields.
-        - Data standardization and consistency.
-        - Invalid date ranges and orders.
-        - Data consistency between related fields.
+    This script performs quality checks on the cleaned data inside the
+    'silver' schema for the Clicks Pharmacy Data Warehouse project.
+
+    The checks focus on:
+        - Null or duplicate primary keys
+        - Invalid or inconsistent values
+        - Unwanted spaces
+        - Invalid dates
+        - Negative numeric values
+        - Data standardization
+        - Missing business-critical fields
 
 Usage Notes:
-        - Run these checks after data loading silver layer.
-        - Investigate and resolve any discrepancies found during the checks.
-==================================================================================
+    - Run these checks AFTER loading the Silver Layer.
+    - Investigate any returned rows.
+===============================================================================
 */
 
--- ===============================================================================
--- Checking 'silver.crm_cust_info'
--- ===============================================================================
+-- =============================================================================
+-- Checking 'silver.crm_clubcard'
+-- =============================================================================
 
--- Check For Null or Duplicates in Primary Key
--- Expectation: No Results
+-- Check for NULLs or duplicates in primary key
+-- Expectation: No results
 SELECT
-    cst_id,
-    COUNT(*)
-FROM silver.crm_cust_info
-GROUP BY cst_id
-HAVING COUNT(*) > 1 OR cst_id IS NULL
+    clubcard_id,
+    COUNT(*) AS record_count
+FROM silver.crm_clubcard
+GROUP BY clubcard_id
+HAVING COUNT(*) > 1
+    OR clubcard_id IS NULL;
 
 -- Check for unwanted spaces
--- Expectation: No Results
-SELECT 
-    cst_key
-FROM silver.crm_cust_info
-WHERE cst_key != TRIM(cst_key);
+-- Expectation: No results
+SELECT
+    clubcard_id,
+    first_name,
+    last_name
+FROM silver.crm_clubcard
+WHERE clubcard_id != TRIM(clubcard_id)
+   OR first_name != TRIM(first_name)
+   OR last_name != TRIM(last_name);
 
--- Data Standardization & Consistency
-SELECT DISTINCT 
-    cst_material_status
-FROM silver.crm_cust_info
-  
--- ===============================================================================
--- Checking 'silver.crm_prd_info'
--- ===============================================================================
--- Check NULLS or Duplicates in Primary Key
--- Expectation: No Invalid Dates
-  SELECT
-      prd_id,
-      COUNT(*)
-  FROM silver.crm_prd_info
-  GROUP BY prd_id
-  HAVING COUNT(*) > 1 OR prd_id IS NULL;
+-- Check invalid email addresses
+-- Expectation: Investigate returned rows
+SELECT
+    clubcard_id,
+    email_address
+FROM silver.crm_clubcard
+WHERE email_address IS NOT NULL
+  AND email_address NOT LIKE '%@%.%';
+
+-- Check gender consistency
+SELECT DISTINCT
+    gender
+FROM silver.crm_clubcard;
+
+-- Check loyalty tier consistency
+SELECT DISTINCT
+    loyalty
+FROM silver.crm_clubcard;
+
+-- =============================================================================
+-- Checking 'silver.crm_products'
+-- =============================================================================
+
+-- Check for NULLs or duplicates in product code
+-- Expectation: No results
+SELECT
+    product_code,
+    COUNT(*) AS record_count
+FROM silver.crm_products
+GROUP BY product_code
+HAVING COUNT(*) > 1
+    OR product_code IS NULL;
 
 -- Check for unwanted spaces
--- Expectation: No Results
-SELECT 
-    prd_nm
-FROM silver.crm_prd_info
-WHERE prd_nm != TRIM(prd_nm);
-
--- Check NULLS or Negative Values in Cost
--- Expectation: No Invalid Dates
-
+-- Expectation: No results
 SELECT
-    prd_cost
-FROM silver.crm_prd_info
-WHERE prd_cost < 0 OR prd_cost IS NULL;
+    product_code,
+    brand_name,
+    manufacturer
+FROM silver.crm_products
+WHERE brand_name != TRIM(brand_name)
+   OR manufacturer != TRIM(manufacturer);
 
--- Data Standardization & Consistency
+-- Check negative or NULL prices
+-- Expectation: No results
+SELECT
+    product_code,
+    price
+FROM silver.crm_products
+WHERE price < 0
+   OR price IS NULL;
+
+-- Check invalid stock quantities
+SELECT
+    product_code,
+    qty
+FROM silver.crm_products
+WHERE qty < 0;
+
+-- Check Rx standardization
 SELECT DISTINCT
-    prd_line
-FROM silver.crm_prd_info;
+    rx
+FROM silver.crm_products;
 
--- Check for Invalid Data Orders (Start Date > End Dates)
--- Expectation: No Results
-
-SELECT
-  *
-FROM silver.crm_prd_info
-WHERE prd_end_dt < prd_start_dt;
-
--- ===============================================================================
--- Checking 'silver.crm_sales_details'
--- ===============================================================================
--- Check For Invalid Dates
--- Expectation: No Invalid Dates
-SELECT
-    NULLIF(sls_due_dt, 0) AS sls_due_dt
-FROM  bronze.crm_sales_details
-WHERE sls_due_dt <= 0
-   OR LEN(sls_due_dt) != 8
-   OR sls_due_dt > 20500101
-   OR sls_due_dt < 19000101;
-  
--- Check for Invalid Data Orders (Order Date > Shipping/Due Dates)
--- Expectation: No Results
-SELECT
-  *
-FROM silver.crm_sales_details
-WHERE sls_order_dt > sls_ship_dt
-   OR sls_order_dt > sls_due_dt;
-
--- Check Data Consistency: Sales = Quantity * Price
--- Expectation: No Results
+-- Check VAT consistency
 SELECT DISTINCT
-  sls_sales, 
-  sls_quantity, 
-  sls_price
-FROM silver.crm_sales_details
-WHERE sls_sales  != sls_quantity * sls_price
-  OR sls_sales IS NULL
-  OR sls_quantity IS NULL
-  OR sls_price IS NULL
-  OR sls_sales <= 0
-  OR sls_quantity <= 0
-  OR sls_price <= 0
-ORDER BY sls_sales, sls_quantity, sls_price;
-  
--- ===============================================================================
--- Checking 'silver.erp_cust_az12'
--- ===============================================================================
--- Identify OUt-Of-Range Dates
--- Expectation: Birthdates between 1924-01-01 and Today
+    vat
+FROM silver.crm_products;
 
-  SELECT DISTINCT
-        bdate
-  FROM silver.erp_cust_az12
-  WHERE bdate < '1924-01-01'
-      OR bdate > GETDATE();
+-- =============================================================================
+-- Checking 'silver.crm_transactions'
+-- =============================================================================
 
--- Data Standardization & Consistency
-SELECT DISTINCT 
-  gen
-FROM silver.erp_cust_az12
+-- Check duplicate transaction IDs
+-- Expectation: No results
+SELECT
+    txn_id,
+    COUNT(*) AS record_count
+FROM silver.crm_transactions
+GROUP BY txn_id
+HAVING COUNT(*) > 1
+    OR txn_id IS NULL;
 
-  
--- ===============================================================================
--- Checking 'silver.erp_loc_a101'
--- ===============================================================================
--- Data Standardization & Consistency
+-- Check invalid quantities
+SELECT
+    txn_id,
+    qty
+FROM silver.crm_transactions
+WHERE qty <= 0
+   OR qty IS NULL;
+
+-- Check negative payment values
+SELECT
+    txn_id,
+    paid,
+    co_pay,
+    medical_aid_amount
+FROM silver.crm_transactions
+WHERE paid < 0
+   OR co_pay < 0
+   OR medical_aid_amount < 0;
+
+-- Check missing store values
+SELECT
+    txn_id,
+    store
+FROM silver.crm_transactions
+WHERE store IS NULL;
+
+-- Check chronic flag consistency
 SELECT DISTINCT
-    cntry
-FROM silver.erp_loc_a101
-ORDER BY cntry
+    chronic
+FROM silver.crm_transactions;
 
--- ===============================================================================
--- Checking 'silver.erp_px_cat_g1v2'
--- ===============================================================================
--- Check for unwanted spaces
--- Expectation: No Results
+-- =============================================================================
+-- Checking 'silver.erp_medical_aid_claims'
+-- =============================================================================
+
+-- Check duplicate claim IDs
+SELECT
+    claim_id,
+    COUNT(*) AS record_count
+FROM silver.erp_medical_aid_claims
+GROUP BY claim_id
+HAVING COUNT(*) > 1
+    OR claim_id IS NULL;
+
+-- Check approved amount > claimed amount
+-- Expectation: No results
+SELECT
+    claim_id,
+    claimed_amount,
+    approved
+FROM silver.erp_medical_aid_claims
+WHERE approved > claimed_amount;
+
+-- Check missing medical schemes
+SELECT
+    claim_id,
+    medical_scheme
+FROM silver.erp_medical_aid_claims
+WHERE medical_scheme IS NULL;
+
+-- =============================================================================
+-- Checking 'silver.erp_medical_scheme_members'
+-- =============================================================================
+
+-- Check duplicate member IDs
+SELECT
+    member_id,
+    COUNT(*) AS record_count
+FROM silver.erp_medical_scheme_members
+GROUP BY member_id
+HAVING COUNT(*) > 1
+    OR member_id IS NULL;
+
+-- Check invalid date ranges
 SELECT
     *
-FROM silver.erp_px_cat_g1v2
-WHERE cat != TRIM(cat)
-    OR subcat != TRIM(subcat)
-    OR maintenance != TRIM(maintenance);
+FROM silver.erp_medical_scheme_members
+WHERE end_date < eff_date;
 
--- Data Standardization & Consistency
+-- Check relationship consistency
 SELECT DISTINCT
-    maintenance
-FROM silver.erp_px_cat_g1v2
+    relationship
+FROM silver.erp_medical_scheme_members;
 
+-- =============================================================================
+-- Checking 'silver.erp_prescription_refills'
+-- =============================================================================
+
+-- Check duplicate refill IDs
+SELECT
+    refill_id,
+    COUNT(*) AS record_count
+FROM silver.erp_prescription_refills
+GROUP BY refill_id
+HAVING COUNT(*) > 1
+    OR refill_id IS NULL;
+
+-- Check invalid refill usage
+SELECT
+    refill_id,
+    total_fills,
+    fills_used
+FROM silver.erp_prescription_refills
+WHERE fills_used > total_fills
+   OR fills_used < 0;
+
+-- Check invalid days supply
+SELECT
+    refill_id,
+    days_supply
+FROM silver.erp_prescription_refills
+WHERE days_supply <= 0;
+
+-- Check invalid next due dates
+SELECT
+    refill_id,
+    last_fill,
+    next_due
+FROM silver.erp_prescription_refills
+WHERE next_due < last_fill;
+
+-- Check refill status consistency
+SELECT DISTINCT
+    stat
+FROM silver.erp_prescription_refills;
