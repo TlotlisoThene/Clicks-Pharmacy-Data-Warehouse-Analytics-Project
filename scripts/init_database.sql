@@ -1,35 +1,55 @@
 /*
+===============================================================================
 Create Database and Schemas
-Script purpose:
-    This script creates a nwe database name 'DataWarehouse' after checking if it already exists.
-    If the database exists, it is dropped and recreated. Additionally, the script sets up threee schemas
-    within the database: 'bronze', 'silver', and 'gold'.
+===============================================================================
+Script Purpose:
+    This script creates a new database named 'ClicksPharmacyDW'.
+    If the database already exists, it will be dropped and recreated.
+
+    The script also creates the following schemas:
+        - bronze  -> Raw source data
+        - silver  -> Cleaned and transformed data
+        - gold    -> Analytics-ready business layer
 
 WARNING:
-    Running this script will drop the entire 'DataWarehouse' database if it exists.
-    All data in the database will permanently deleted. Proceed with caution
-    and ensure you have proper backups before running this script.
+    Running this script will permanently delete the existing
+    'ClicksPharmacyDW' database and all its data.
+    Ensure proper backups before execution.
+===============================================================================
 */
 
 USE master;
 GO
--- Drop and recreate the 'Datawarehouse' database
-IF EXIST (SELECT 1 FROM sys.databases WHERE name = 'Datawarehouse')
+
+-- Drop existing database if it exists
+IF EXISTS (
+    SELECT 1
+    FROM sys.databases
+    WHERE name = 'ClicksPharmacyDW'
+)
 BEGIN
-  ALTER DATABASE Datawarehouse SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-  DROP DATABASE Datawarehouse;
+    ALTER DATABASE ClicksPharmacyDW
+    SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+
+    DROP DATABASE ClicksPharmacyDW;
 END;
-
--- Craete 'DataWarehouse' database
-CREATE DATABASE DataWarehouse;
-GO
-USE DataWarehouse;
 GO
 
-  -- Create Schemas
+-- Create database
+CREATE DATABASE ClicksPharmacyDW;
+GO
+
+USE ClicksPharmacyDW;
+GO
+
+-- Create Schemas
 CREATE SCHEMA bronze;
 GO
+
 CREATE SCHEMA silver;
+GO
+
+CREATE SCHEMA gold;
 GO
 CREATE SCHEMA gold;
 GO
