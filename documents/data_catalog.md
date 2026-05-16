@@ -7,17 +7,16 @@ It is structured into:
 
 -- Dimension tables → descriptive business entities (customers, products, schemes, etc.)
 -- Fact tables → measurable business transactions (sales, claims, refills, etc.)
-
 This layer is designed for SQL analytics, reporting, and BI dashboards.
 
 ---
 
-### 1. gold.dim_customers
-- Purpose
+### 1. **gold.dim_customers**
+- **Purpose**
 
 Stores enriched customer (ClubCard member) information including demographics, loyalty, and contact details.
 
-- Columns
+- **Columns:**
   | Column Name  | Data Type     | Description                                                       |
 | ------------ | ------------- | ----------------------------------------------------------------- |
 | customer_key | INT           | Surrogate key uniquely identifying each customer in the warehouse |
@@ -32,3 +31,5 @@ Stores enriched customer (ClubCard member) information including demographics, l
 | loyalty_tier | NVARCHAR(20)  | Loyalty level (Gold, Silver, Platinum)                            |
 | last_visit   | DATE          | Most recent recorded transaction date                             |
 | language     | NVARCHAR(20)  | Preferred communication language                                  |
+
+---
