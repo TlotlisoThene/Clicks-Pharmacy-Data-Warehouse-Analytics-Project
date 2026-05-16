@@ -1,85 +1,152 @@
 /*
-DDL Script: Create Bronze Tavles
+DDL Script: Create Bronze Tables
 ----------------------------------------------------------------------------------
 Script Purpose:
-    This script creates tables in the 'bronze' schema, dropping existing tables
-    if they already exist.
-    Run this script to re-define the DDL structure of the 'bronze' Tables
+    This script creates tables in the 'bronze' schema for the
+    Clicks Pharmacy Data Warehouse Project.
+
+    The bronze layer stores raw data imported directly from CSV files
+    before cleansing and transformation.
+
+    Existing tables are dropped before being recreated.
 ----------------------------------------------------------------------------------
 */
 
-IF OBJECT_ID ('bronze.crm_cust_info', 'U') IS NOT NULL
-	DROP TABLE bronze.crm_cust_info;
-CREATE TABLE bronze.crm_cust_info (
+-- =========================
+-- CRM TABLES
+-- =========================
 
-  GO
-  
-	cst_id INT,
-	cst_key NVARCHAR(50),
-	cst_firstname NVARCHAR(50),
-	cst_lastname NVARCHAR(50),
-	cst_material_status NVARCHAR(50),
-	cst_gndr NVARCHAR(50),
-	cst_create_date DATE
-);
-
+IF OBJECT_ID ('bronze.crm_clubcard', 'U') IS NOT NULL
+    DROP TABLE bronze.crm_clubcard;
 GO
 
-IF OBJECT_ID ('bronze.crm_prd_info', 'U') IS NOT NULL
-	DROP TABLE bronze.crm_prd_info;
-GO
-CREATE TABLE bronze.crm_prd_info (
-	prd_id INT,
-	prd_key NVARCHAR(50),
-	prd_nm NVARCHAR(50),
-	prd_cost NVARCHAR(50),
-	prd_line NVARCHAR(50),
-	prd_start_dt NVARCHAR(50),
-	prd_end_dt DATETIME
-);
-GO
-IF OBJECT_ID ('bronze.crm_sales_details', 'U') IS NOT NULL
-	DROP TABLE bronze.crm_sales_details;
-GO
-CREATE TABLE bronze.crm_sales_details (
-	sls_ord_num NVARCHAR(50),
-	sls_prd_key NVARCHAR(50),
-	sls_cust_id INT,
-	sls_order_dt INT,
-	sls_ship_dt INT,
-	sls_due_dt INT,
-	sls_sales_dt INT,
-	sls_quantity_dt INT,
-	sls_price_dt INT
-);
-GO
-IF OBJECT_ID ('bronze.erp_loc_a101', 'U') IS NOT NULL
-	DROP TABLE bronze.erp_loc_a101;
-GO
-CREATE TABLE bronze.erp_loc_a101 (
-	cid NVARCHAR(50),
-	cntry NVARCHAR(50)
+CREATE TABLE bronze.crm_clubcard (
+
+    clubcard_id        NVARCHAR(20),
+    first_name         NVARCHAR(50),
+    last_name          NVARCHAR(50),
+    id_number          NVARCHAR(20),
+    gender             NVARCHAR(10),
+    cell               NVARCHAR(20),
+    email_address      NVARCHAR(100),
+    city               NVARCHAR(50),
+    postal_code        NVARCHAR(10),
+    loyalty_tier       NVARCHAR(20),
+    last_visit         DATE,
+    language_pref      NVARCHAR(20)
 
 );
 GO
-IF OBJECT_ID ('bronze.erp_crust_az12', 'U') IS NOT NULL
-	DROP TABLE bronze.erp_crust_az12;
-GO
-CREATE TABLE bronze.erp_crust_az12 (
-	cid NVARCHAR(50),
-	bdate DATE,
-	gen NVARCHAR(50)
 
-);	
-GO
-IF OBJECT_ID ('bronze.erp_px_cat-g1v2', 'U') IS NOT NULL
-	DROP TABLE bronze.erp_px_cat_g1v2;
-GO
-CREATE TABLE bronze.erp_px_cat_g1v2 (
-	id NVARCHAR(50),
-	cat NVARCHAR(50),
-	subcat NVARCHAR(50),
-	maintenance NVARCHAR(50)
 
-);	
+IF OBJECT_ID ('bronze.crm_transactions', 'U') IS NOT NULL
+    DROP TABLE bronze.crm_transactions;
+GO
+
+CREATE TABLE bronze.crm_transactions (
+
+    txn_id             INT,
+    clubcard_id        NVARCHAR(20),
+    product_code       NVARCHAR(50),
+    date_filled        NVARCHAR(50),
+    quantity           NVARCHAR(50),
+    amount_paid        DECIMAL(10,2),
+    copay_amount       NVARCHAR(50),
+    medical_aid_amt    DECIMAL(10,2),
+    store_code         NVARCHAR(20),
+    doctor_id          NVARCHAR(20),
+    refill_number      INT,
+    chronic_flag       NVARCHAR(20)
+
+);
+GO
+
+
+IF OBJECT_ID ('bronze.crm_prescription_refills', 'U') IS NOT NULL
+    DROP TABLE bronze.crm_prescription_refills;
+GO
+
+CREATE TABLE bronze.crm_prescription_refills (
+
+    refill_id          NVARCHAR(20),
+    clubcard_id        NVARCHAR(20),
+    product_code       NVARCHAR(50),
+    prescription_date  NVARCHAR(50),
+    auth_number        NVARCHAR(50),
+    total_fills        INT,
+    fills_used         INT,
+    last_fill_date     NVARCHAR(50),
+    days_supply        INT,
+    next_due_date      NVARCHAR(50),
+    prescriber_id      NVARCHAR(20),
+    refill_status      NVARCHAR(20)
+
+);
+GO
+
+
+-- =========================
+-- ERP TABLES
+-- =========================
+
+IF OBJECT_ID ('bronze.erp_products', 'U') IS NOT NULL
+    DROP TABLE bronze.erp_products;
+GO
+
+CREATE TABLE bronze.erp_products (
+
+    product_code           NVARCHAR(50),
+    brand_name             NVARCHAR(100),
+    generic_name           NVARCHAR(100),
+    manufacturer           NVARCHAR(100),
+    unit_price             DECIMAL(10,2),
+    schedule_level         NVARCHAR(10),
+    category               NVARCHAR(50),
+    prescription_required  NVARCHAR(20),
+    ndc_code               NVARCHAR(50),
+    stock_quantity         INT,
+    vat_applicable         NVARCHAR(20)
+
+);
+GO
+
+
+IF OBJECT_ID ('bronze.erp_medical_aid_claims', 'U') IS NOT NULL
+    DROP TABLE bronze.erp_medical_aid_claims;
+GO
+
+CREATE TABLE bronze.erp_medical_aid_claims (
+
+    claim_id           NVARCHAR(20),
+    clubcard_id        NVARCHAR(20),
+    date_filled        NVARCHAR(50),
+    product_code       NVARCHAR(50),
+    claimed_amount     DECIMAL(10,2),
+    approved_amount    DECIMAL(10,2),
+    denial_reason      NVARCHAR(100),
+    medical_scheme     NVARCHAR(100),
+    plan_name          NVARCHAR(100),
+    process_date       NVARCHAR(50)
+
+);
+GO
+
+
+IF OBJECT_ID ('bronze.erp_medical_scheme_members', 'U') IS NOT NULL
+    DROP TABLE bronze.erp_medical_scheme_members;
+GO
+
+CREATE TABLE bronze.erp_medical_scheme_members (
+
+    member_id          NVARCHAR(20),
+    clubcard_id        NVARCHAR(20),
+    medical_scheme     NVARCHAR(100),
+    joined_date        DATE,
+    employer_group     NVARCHAR(50),
+    plan_name          NVARCHAR(100),
+    relationship_type  NVARCHAR(50),
+    effective_date     DATE,
+    end_date           DATE
+
+);
 GO
