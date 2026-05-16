@@ -3,99 +3,191 @@
 DDL Script: Create Silver Tables
 ===============================================================================
 Script Purpose:
-    This script creates tables in the 'silver' schema, droprring existing tables
+    This script creates tables in the 'silver' schema, dropping existing tables
     if they already exist.
-    Run this script to re-define the DDL structure of 'silver' tables.
-================================================================================
+
+    The Silver Layer contains cleaned, standardized, and transformation-ready
+    data loaded from the Bronze Layer.
+
+    Run this script to re-define the DDL structure of the 'silver' tables.
+===============================================================================
 */
-IF OBJECT_ID ('silver.crm_cust_info', 'U') IS NOT NULL
-	DROP TABLE silver.crm_cust_info;
 
+
+/* ============================================================================
+   CRM TABLES
+============================================================================ */
+
+
+/* ----------------------------------------------------------------------------
+   silver.crm_clubcard
+---------------------------------------------------------------------------- */
+
+IF OBJECT_ID ('silver.crm_clubcard', 'U') IS NOT NULL
+    DROP TABLE silver.crm_clubcard;
 GO
 
-CREATE TABLE silver.crm_cust_info (
-	cst_id INT,
-	cst_key NVARCHAR(50),
-	cst_firstname NVARCHAR(50),
-	cst_lastname NVARCHAR(50),
-	cst_material_status NVARCHAR(50),
-	cst_gndr NVARCHAR(50),
-	cst_create_date DATE,
-	dwh_create_date DATETIME2 DEFAULT GETDATE()
+CREATE TABLE silver.crm_clubcard (
+
+    clubcard_id        NVARCHAR(50),
+    first_name         NVARCHAR(50),
+    last_name          NVARCHAR(50),
+    id_number          NVARCHAR(20),
+    gender             NVARCHAR(10),
+    cell_number        NVARCHAR(20),
+    email_address      NVARCHAR(100),
+    city               NVARCHAR(50),
+    postal_code        NVARCHAR(10),
+    loyalty_tier       NVARCHAR(20),
+    last_visit_date    DATE,
+    language_pref      NVARCHAR(20),
+
+    dwh_create_date    DATETIME2 DEFAULT GETDATE()
+
 );
 GO
 
-IF OBJECT_ID ('silver.crm_prd_info', 'U') IS NOT NULL
-	DROP TABLE silver.crm_prd_info;
 
+/* ----------------------------------------------------------------------------
+   silver.crm_products
+---------------------------------------------------------------------------- */
+
+IF OBJECT_ID ('silver.crm_products', 'U') IS NOT NULL
+    DROP TABLE silver.crm_products;
 GO
 
-CREATE TABLE silver.crm_prd_info (
-	prd_id INT,
-	cat_id NVARCHAR(50),
-	prd_key NVARCHAR(50),
-	prd_nm NVARCHAR(50),
-	prd_cost INT,
-	prd_line NVARCHAR(50),
-	prd_start_dt DATE,
-	prd_end_dt DATE,
-	dwh_create_date DATETIME2 DEFAULT GETDATE()
-);
-GO
-	
-IF OBJECT_ID ('silver.crm_sales_details', 'U') IS NOT NULL
-	DROP TABLE silver.crm_sales_details;
+CREATE TABLE silver.crm_products (
 
-GO
+    product_code       NVARCHAR(50),
+    brand_name         NVARCHAR(100),
+    generic_name       NVARCHAR(100),
+    manufacturer       NVARCHAR(100),
+    product_price      DECIMAL(10,2),
+    schedule_level     INT,
+    category           NVARCHAR(50),
+    prescription_flag  NVARCHAR(10),
+    ndc_code           NVARCHAR(50),
+    stock_quantity     INT,
+    vat_applicable     NVARCHAR(10),
 
-CREATE TABLE silver.crm_sales_details (
-	sls_ord_num NVARCHAR(50),
-	sls_prd_key NVARCHAR(50),
-	sls_cust_id INT,
-	sls_order_dt DATE,
-	sls_ship_dt DATE,
-	sls_due_dt DATE,
-	sls_sales INT,
-	sls_quantity INT,
-	sls_price INT,
-	dwh_create_date DATETIME2 DEFAULT GETDATE()
-);
-GO
-  
-IF OBJECT_ID ('silver.erp_loc_a101', 'U') IS NOT NULL
-	DROP TABLE silver.erp_loc_a101;
+    dwh_create_date    DATETIME2 DEFAULT GETDATE()
 
-GO
-  
-CREATE TABLE silver.erp_loc_a101 (
-	cid NVARCHAR(50),
-	cntry NVARCHAR(50),
-	dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
 GO
 
-IF OBJECT_ID ('silver.erp_crust_az12', 'U') IS NOT NULL
-	DROP TABLE silver.erp_crust_az12;
 
+/* ----------------------------------------------------------------------------
+   silver.crm_transactions
+---------------------------------------------------------------------------- */
+
+IF OBJECT_ID ('silver.crm_transactions', 'U') IS NOT NULL
+    DROP TABLE silver.crm_transactions;
 GO
 
-CREATE TABLE silver.erp_crust_az12 (
-	cid NVARCHAR(50),
-	bdate DATE,
-	gen NVARCHAR(50),
-	dwh_create_date DATETIME2 DEFAULT GETDATE()
-);	
+CREATE TABLE silver.crm_transactions (
+
+    transaction_id         INT,
+    clubcard_id            NVARCHAR(50),
+    product_code           NVARCHAR(50),
+    date_filled            DATE,
+    quantity               INT,
+    amount_paid            DECIMAL(10,2),
+    copay_amount           DECIMAL(10,2),
+    medical_aid_amount     DECIMAL(10,2),
+    store_code             NVARCHAR(20),
+    doctor_id              NVARCHAR(20),
+    refill_number          INT,
+    chronic_flag           NVARCHAR(10),
+
+    dwh_create_date        DATETIME2 DEFAULT GETDATE()
+
+);
 GO
 
-IF OBJECT_ID ('silver.erp_px_cat_g1v2', 'U') IS NOT NULL
-	DROP TABLE silver.erp_px_cat_g1v2;
+
+
+/* ============================================================================
+   ERP TABLES
+============================================================================ */
+
+
+/* ----------------------------------------------------------------------------
+   silver.erp_medical_aid_claims
+---------------------------------------------------------------------------- */
+
+IF OBJECT_ID ('silver.erp_medical_aid_claims', 'U') IS NOT NULL
+    DROP TABLE silver.erp_medical_aid_claims;
 GO
-  
-CREATE TABLE silver.erp_px_cat_g1v2 (
-	id NVARCHAR(50),
-	cat NVARCHAR(50),
-	subcat NVARCHAR(50),
-	maintenance NVARCHAR(50),
-	dwh_create_date DATETIME2 DEFAULT GETDATE()
+
+CREATE TABLE silver.erp_medical_aid_claims (
+
+    claim_id               NVARCHAR(50),
+    clubcard_id            NVARCHAR(50),
+    date_filled            DATE,
+    product_code           NVARCHAR(50),
+    claimed_amount         DECIMAL(10,2),
+    approved_amount        DECIMAL(10,2),
+    denial_reason          NVARCHAR(100),
+    medical_scheme         NVARCHAR(100),
+    plan_name              NVARCHAR(100),
+    process_date           DATE,
+
+    dwh_create_date        DATETIME2 DEFAULT GETDATE()
+
+);
+GO
+
+
+/* ----------------------------------------------------------------------------
+   silver.erp_medical_scheme_members
+---------------------------------------------------------------------------- */
+
+IF OBJECT_ID ('silver.erp_medical_scheme_members', 'U') IS NOT NULL
+    DROP TABLE silver.erp_medical_scheme_members;
+GO
+
+CREATE TABLE silver.erp_medical_scheme_members (
+
+    member_id              NVARCHAR(50),
+    clubcard_id            NVARCHAR(50),
+    medical_scheme         NVARCHAR(100),
+    joined_date            DATE,
+    employer_group         NVARCHAR(50),
+    plan_name              NVARCHAR(100),
+    relationship_type      NVARCHAR(50),
+    effective_date         DATE,
+    end_date               DATE,
+
+    dwh_create_date        DATETIME2 DEFAULT GETDATE()
+
+);
+GO
+
+
+/* ----------------------------------------------------------------------------
+   silver.erp_prescription_refills
+---------------------------------------------------------------------------- */
+
+IF OBJECT_ID ('silver.erp_prescription_refills', 'U') IS NOT NULL
+    DROP TABLE silver.erp_prescription_refills;
+GO
+
+CREATE TABLE silver.erp_prescription_refills (
+
+    refill_id              NVARCHAR(50),
+    clubcard_id            NVARCHAR(50),
+    product_code           NVARCHAR(50),
+    prescription_date      DATE,
+    authorization_number   NVARCHAR(50),
+    total_fills            INT,
+    fills_used             INT,
+    last_fill_date         DATE,
+    days_supply            INT,
+    next_due_date          DATE,
+    prescriber_id          NVARCHAR(20),
+    refill_status          NVARCHAR(20),
+
+    dwh_create_date        DATETIME2 DEFAULT GETDATE()
+
 );
 GO
