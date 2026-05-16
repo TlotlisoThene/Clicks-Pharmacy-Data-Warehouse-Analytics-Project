@@ -32,4 +32,5 @@ Stores enriched customer (ClubCard member) information including demographics, l
 | last_visit   | DATE          | Most recent recorded transaction date                             |
 | language     | NVARCHAR(20)  | Preferred communication language                                  |
 
+
 ---
