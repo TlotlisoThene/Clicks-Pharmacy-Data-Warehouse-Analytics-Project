@@ -11,7 +11,7 @@ This layer is designed for SQL analytics, reporting, and BI dashboards.
 
 ---
 
-### 1. **gold.dim_customers**
+### 1. **gold.dim_customers** 
 - **Purpose**
 
 Stores enriched customer (ClubCard member) information including demographics, loyalty, and contact details.
