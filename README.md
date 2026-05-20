@@ -32,11 +32,11 @@ This project enables analysis of key business questions such as:
 
 ## Project Requirements
 
-# Building the data warehouse
-# Objectives
+## Building the data warehouse
+## Objectives
 Building a modern data warehouse using SQL Server, Implementing ETL (Extract, Transform, Load) processes, Designing data models for analytical workloads, and Performing data analysis to generate actionable insights.
 
-# Specifications
+## Specifications
 - Data Sources: CRM and ERP CSV-based source systems.
 - Data Quality: Handle missing values, inconsistent formats, duplicates, and invalid entries.
 - Integration: Consolidate multiple systems into a single analytics-ready model.
@@ -46,17 +46,17 @@ Building a modern data warehouse using SQL Server, Implementing ETL (Extract, Tr
 
 ## Analytics & Reporting (Data Analyst Layer)
 
-# Customer Analytics
+## Customer Analytics
   Prescription refill adherence by loyalty tier
   Chronic vs acute medication patient segmentation
   Cross-sell and behavior pattern analysis
   
-# Product Performance
+## Product Performance
   Top-selling medications by store and region
   Brand-name vs generic usage trends
   Controlled medication tracking (Schedule-based analysis)
   
-# Sales & Financial Analytics
+## Sales & Financial Analytics
   Monthly revenue per store (JHB-02, CPT-03, DBN-01, etc.)
   Cash vs medical aid payment distribution
   Claim denial rates by medical scheme
