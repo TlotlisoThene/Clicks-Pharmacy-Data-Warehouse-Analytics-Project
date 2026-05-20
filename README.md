@@ -32,6 +32,7 @@ The goal is to build a scalable, clean, and analytics-ready data warehouse that 
 ## Data Architecture
 
 <img width="1644" height="957" alt="data_architecture" src="https://github.com/user-attachments/assets/be1a2d9d-86e6-4f33-a1f0-3d1295d5cb6a" />
+
 - **Bronze Layer** → Raw ingestion from CRM & ERP CSV source systems
 - **Silver Layer** → Data cleansing, standardization, and transformation
 - **Gold Layer** → Business-ready dimensional models optimized for analytics
