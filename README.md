@@ -6,13 +6,13 @@ This project demonstrates a comprehensive data warehouse and analytics solution,
 
 This project simulates a real-world retail pharmacy analytics environment by integrating data from multiple operational systems:
 
-# Front-office (CRM systems)
+## Front-office (CRM systems)
 
 - Customer loyalty (ClubCard) data
 - Pharmacy dispensing and transaction records
 - Prescription refill and adherence tracking
 
-# Back-office (ERP systems)
+## Back-office (ERP systems)
 
 - Product catalog and pricing information
 - Medical aid claims processing
