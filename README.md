@@ -11,17 +11,17 @@ The project highlights industry best practices in:
 
 ---
 
- ##Project Overview
+ ## Project Overview
 
 This project simulates a real-world retail pharmacy analytics environment by integrating data from multiple operational systems:
 
- ##Front-office (CRM systems)
+ ## Front-office (CRM systems)
 
 - Customer loyalty (ClubCard) data
 - Pharmacy dispensing and transaction records
 - Prescription refill and adherence tracking
 
- ##Back-office (ERP systems)
+ ## Back-office (ERP systems)
 
 - Product catalog and pricing information
 - Medical aid claims processing
@@ -29,7 +29,7 @@ This project simulates a real-world retail pharmacy analytics environment by int
 
 The goal is to build a scalable, clean, and analytics-ready data warehouse that enables stakeholders to make data-driven decisions.
 
-##Data Architecture
+## Data Architecture
 
 <img width="1644" height="957" alt="data_architecture" src="https://github.com/user-attachments/assets/be1a2d9d-86e6-4f33-a1f0-3d1295d5cb6a" />
 - **Bronze Layer** → Raw ingestion from CRM & ERP CSV source systems
@@ -39,7 +39,7 @@ The goal is to build a scalable, clean, and analytics-ready data warehouse that 
 
 ---
 
- ##Business Questions Addressed
+ ## Business Questions Addressed
 
 This project enables analysis of key business questions such as:
 
@@ -49,13 +49,13 @@ This project enables analysis of key business questions such as:
 - How does loyalty tier affect prescription adherence?
 - What are the trends in chronic vs acute medication usage?
 
- ##Project Requirements
+ ## Project Requirements
 
-##Building the data warehouse
- ##Objectives
+## Building the data warehouse
+ ## Objectives
 Building a modern data warehouse using SQL Server, Implementing ETL (Extract, Transform, Load) processes, Designing data models for analytical workloads, and Performing data analysis to generate actionable insights.
 
- ##Specifications
+ ## Specifications
 - Data Sources: CRM and ERP CSV-based source systems.
 - Data Quality: Handle missing values, inconsistent formats, duplicates, and invalid entries.
 - Integration: Consolidate multiple systems into a single analytics-ready model.
@@ -63,25 +63,25 @@ Building a modern data warehouse using SQL Server, Implementing ETL (Extract, Tr
 - Context: Simulated South African retail pharmacy environment.
 - Documentation: Clear schema and data model documentation for business and technical users.
 
- ##Analytics & Reporting (Data Analyst Layer)
+ ## Analytics & Reporting (Data Analyst Layer)
 
- ##Customer Analytics
+ ## Customer Analytics
   Prescription refill adherence by loyalty tier
   Chronic vs acute medication patient segmentation
   Cross-sell and behavior pattern analysis
   
- ##Product Performance
+ ## Product Performance
   Top-selling medications by store and region
   Brand-name vs generic usage trends
   Controlled medication tracking (Schedule-based analysis)
   
- ##Sales & Financial Analytics
+ ## Sales & Financial Analytics
   Monthly revenue per store (JHB-02, CPT-03, DBN-01, etc.)
   Cash vs medical aid payment distribution
   Claim denial rates by medical scheme
   Copay and reimbursement analysis
 
- ##Data Engineering Concepts Demonstrated
+ ## Data Engineering Concepts Demonstrated
 
 This project demonstrates practical implementation of:
 
@@ -92,7 +92,7 @@ This project demonstrates practical implementation of:
   - Data integration from multiple source systems
   - Business intelligence reporting using SQL
 
- ##Data Quality Challenges Handled
+ ## Data Quality Challenges Handled
 
 The datasets intentionally include realistic inconsistencies such as:
 
@@ -103,14 +103,14 @@ The datasets intentionally include realistic inconsistencies such as:
   - Duplicate and incomplete records
   - Inconsistent product and customer identifiers
 
- ##About This Dataset
+ ## About This Dataset
 
 This is a simulated retail pharmacy dataset inspired by real-world South African pharmacy operations. It is designed for educational and portfolio purposes and does not contain real customer or medical data.
 
- ##License
+ ## License
 This project is licensed under the (MIT Licenses). You are free to use, modify and share this project with proper attribution.
 
- ##About Me
+ ## About Me
 
 Hi, I'm Tlotliso Thene, a final-year BSc Computer Science and Applied Mathematics student with interests in data engineering, analytics, and database systems.
 
@@ -120,5 +120,5 @@ This project demonstrates my practical skills in:
 - Data cleaning and transformation
 - Analytics and business reporting
 
-##Connect with me:
+## Connect with me:
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/tlotliso-thene)
